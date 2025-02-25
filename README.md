@@ -2,6 +2,19 @@
 
 Simple script to backup and restore auth0 configurations for tenant sync
 
+Each tenant configuration contains the full spec. Since this might include secrets, all the clients configuration files are stored in git encrypted leveraging [SOPS: Secrets OPerationS](https://github.com/mozilla/sops).
+This repo uses SOPS with AWS KMS keys stored in AWS services account.
+
+## Prerequisite
+
+To run locally the upload / download operation the following tools are needed:
+
+- [SOPS](https://github.com/mozilla/sops). Available on homebrew `brew install sops`  
+- A terminal session authenticated with AWS services account (this account contains the encryption key needed to encrypt/decrypt SOPS)
+- Configure the local dot env files to avoid leaking secrets
+  - [.env.dev.local]
+  - [.env.production.local]
+
 ## Environments
 
 The following auth environments are available:
