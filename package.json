@@ -1,0 +1,9 @@
+{
+  "scripts": {
+    "download": "sh ./scripts/cli.sh download",
+    "upload": "sh ./scripts/cli.sh upload"
+  },
+  "dependencies": {
+    "auth0-deploy-cli": "^8.6.2"
+  }
+}
