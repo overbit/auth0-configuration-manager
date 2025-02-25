@@ -1,0 +1,51 @@
+name: auth0-configuration-sync
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        if: ${{ steps.cache-node-modules.outputs.cache-hit != 'true' }}
+        run: npm ci
+
+      - name: Restore `dev` tenant configuration
+        shell: bash
+        env:
+          AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN_DEV }}
+          AUTH0_CLIENT_ID: ${{ secrets.AUTH0_CLIENT_ID_DEV }}
+          AUTH0_CLIENT_SECRET: ${{ secrets.AUTH0_CLIENT_SECRET_DEV }}
+        run: |
+          echo "" >> .env.dev.local
+          echo "AUTH0_DOMAIN=$AUTH0_DOMAIN" >> .env.dev.local
+          echo "AUTH0_CLIENT_ID=$AUTH0_CLIENT_ID" >> .env.dev.local
+          echo "AUTH0_CLIENT_SECRET=$AUTH0_CLIENT_SECRET" >> .env.dev.local 
+          npm run upload -- dev
+
+      - name: Restore `production` tenant configuration
+        if: ${{ github.ref_name == github.event.repository.default_branch }}
+        shell: bash
+        env:
+          AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN_PROD }}
+          AUTH0_CLIENT_ID: ${{ secrets.AUTH0_CLIENT_ID_PROD }}
+          AUTH0_CLIENT_SECRET: ${{ secrets.AUTH0_CLIENT_SECRET_PROD }}
+        run: |
+          echo "" >> .env.production.local
+          echo "AUTH0_DOMAIN=$AUTH0_DOMAIN" >> .env.production.local
+          echo "AUTH0_CLIENT_ID=$AUTH0_CLIENT_ID" >> .env.production.local
+          echo "AUTH0_CLIENT_SECRET=$AUTH0_CLIENT_SECRET" >> .env.production.local 
+          npm run upload -- production

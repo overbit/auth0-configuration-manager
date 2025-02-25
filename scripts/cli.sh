@@ -1,4 +1,4 @@
-#!bin/bash
+#!/bin/bash
 set -euo pipefail
 
 mode=$1
@@ -7,10 +7,6 @@ enviroment=${2:-"dev"}
 cliConfigurations=.env.${enviroment}
 tenant=$enviroment
 
-if [ $? -ne 0 ]; then
-  echo "Failed to call KMS encryption service: NoCredentialProviders"
-  exit 1
-fi
 
 if [[ "$enviroment" =~ ^(dev)$ ]]; then
   cliConfigurations=.env.dev
